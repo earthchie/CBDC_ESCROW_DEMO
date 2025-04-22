@@ -1,5 +1,5 @@
 {
-	"name": "changcoinnft.com",
+	"name": "CBDC_ESCROW_DEMO",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
@@ -24,11 +24,5 @@
 		"svelte-preprocess": "^6.0.2",
 		"vite": "^5.0.3"
 	},
-	"type": "module",
-	"dependencies": {
-		"dayjs": "^1.11.12",
-		"ethers": "^5.7.2",
-		"flatpickr": "^4.6.13",
-		"svelte-flatpickr": "^3.3.4"
-	}
+	"type": "module"
 }
