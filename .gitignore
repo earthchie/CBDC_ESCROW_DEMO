@@ -1,0 +1,22 @@
+node_modules
+
+# Output
+.vite
+.output
+.vercel
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+#.env #our project has no environment secret :)
+#.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
