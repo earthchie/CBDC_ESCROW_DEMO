@@ -86,10 +86,11 @@ export async function getOrders(){
     const counter = await Escrow.transactionCounter();
     let orders = [];
     for(let i = 0; i < counter; i++){
-        let order = await Escrow.getTransaction(i);
+        let orderId = await Escrow.allOrderIds(i);
+        let order = await Escrow.getTransaction(orderId);
         orders.push({
             order: order,
-            transactionId: i,
+            orderId: orderId,
             seller: order.seller,
             amount: ethers.utils.formatUnits(order.amount),
             description: order.description,

@@ -32,13 +32,24 @@ export const ESCROW_ABI = [
         "type": "error"
     },
     {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+            }
+        ],
+        "name": "SafeERC20FailedOperation",
+        "type": "error"
+    },
+    {
         "anonymous": false,
         "inputs": [
             {
                 "indexed": true,
-                "internalType": "uint256",
-                "name": "transactionId",
-                "type": "uint256"
+                "internalType": "string",
+                "name": "orderId",
+                "type": "string"
             },
             {
                 "indexed": false,
@@ -74,9 +85,9 @@ export const ESCROW_ABI = [
         "inputs": [
             {
                 "indexed": true,
-                "internalType": "uint256",
-                "name": "transactionId",
-                "type": "uint256"
+                "internalType": "string",
+                "name": "orderId",
+                "type": "string"
             },
             {
                 "indexed": true,
@@ -99,40 +110,9 @@ export const ESCROW_ABI = [
         "inputs": [
             {
                 "indexed": true,
-                "internalType": "uint256",
-                "name": "transactionId",
-                "type": "uint256"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "seller",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "name": "PaymentReleased",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "uint256",
-                "name": "transactionId",
-                "type": "uint256"
-            },
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "buyer",
-                "type": "address"
+                "internalType": "string",
+                "name": "orderId",
+                "type": "string"
             },
             {
                 "indexed": true,
@@ -161,9 +141,9 @@ export const ESCROW_ABI = [
         "inputs": [
             {
                 "indexed": true,
-                "internalType": "uint256",
-                "name": "transactionId",
-                "type": "uint256"
+                "internalType": "string",
+                "name": "orderId",
+                "type": "string"
             },
             {
                 "indexed": true,
@@ -186,14 +166,20 @@ export const ESCROW_ABI = [
         "inputs": [
             {
                 "indexed": true,
-                "internalType": "uint256",
-                "name": "transactionId",
-                "type": "uint256"
+                "internalType": "string",
+                "name": "orderId",
+                "type": "string"
             },
             {
                 "indexed": false,
                 "internalType": "string",
                 "name": "trackingNumber",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "shippingProvider",
                 "type": "string"
             }
         ],
@@ -205,28 +191,9 @@ export const ESCROW_ABI = [
         "inputs": [
             {
                 "indexed": true,
-                "internalType": "uint256",
-                "name": "transactionId",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
                 "internalType": "string",
-                "name": "reason",
+                "name": "orderId",
                 "type": "string"
-            }
-        ],
-        "name": "TransactionCancelled",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "uint256",
-                "name": "transactionId",
-                "type": "uint256"
             }
         ],
         "name": "TransactionCompleted",
@@ -237,9 +204,15 @@ export const ESCROW_ABI = [
         "inputs": [
             {
                 "indexed": true,
-                "internalType": "uint256",
-                "name": "transactionId",
-                "type": "uint256"
+                "internalType": "string",
+                "name": "orderId",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "reason",
+                "type": "string"
             }
         ],
         "name": "TransactionDisputed",
@@ -262,21 +235,27 @@ export const ESCROW_ABI = [
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "_transactionId",
+                "name": "",
                 "type": "uint256"
             }
         ],
-        "name": "adminConfirmDelivery",
-        "outputs": [],
-        "stateMutability": "nonpayable",
+        "name": "allOrderIds",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "_transactionId",
-                "type": "uint256"
+                "internalType": "string",
+                "name": "_orderId",
+                "type": "string"
             }
         ],
         "name": "confirmDelivery",
@@ -287,9 +266,9 @@ export const ESCROW_ABI = [
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "_buyer",
-                "type": "address"
+                "internalType": "string",
+                "name": "_orderId",
+                "type": "string"
             },
             {
                 "internalType": "uint256",
@@ -303,22 +282,34 @@ export const ESCROW_ABI = [
             }
         ],
         "name": "createPaymentRequest",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
+        "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
     },
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "_transactionId",
-                "type": "uint256"
+                "internalType": "string",
+                "name": "_orderId",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_reason",
+                "type": "string"
+            }
+        ],
+        "name": "dispute",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "_orderId",
+                "type": "string"
             }
         ],
         "name": "doesTransactionExist",
@@ -335,9 +326,47 @@ export const ESCROW_ABI = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "_transactionId",
-                "type": "uint256"
+                "internalType": "address",
+                "name": "_buyer",
+                "type": "address"
+            }
+        ],
+        "name": "getBuyerOrders",
+        "outputs": [
+            {
+                "internalType": "string[]",
+                "name": "",
+                "type": "string[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_seller",
+                "type": "address"
+            }
+        ],
+        "name": "getSellerOrders",
+        "outputs": [
+            {
+                "internalType": "string[]",
+                "name": "",
+                "type": "string[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "_orderId",
+                "type": "string"
             }
         ],
         "name": "getTransaction",
@@ -367,6 +396,11 @@ export const ESCROW_ABI = [
                     {
                         "internalType": "string",
                         "name": "trackingNumber",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "shippingProvider",
                         "type": "string"
                     },
                     {
@@ -404,6 +438,25 @@ export const ESCROW_ABI = [
         "type": "function"
     },
     {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "name": "orderIdExists",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [],
         "name": "owner",
         "outputs": [
@@ -419,9 +472,9 @@ export const ESCROW_ABI = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "_transactionId",
-                "type": "uint256"
+                "internalType": "string",
+                "name": "_orderId",
+                "type": "string"
             }
         ],
         "name": "pay",
@@ -430,8 +483,14 @@ export const ESCROW_ABI = [
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "renounceOwnership",
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "_orderId",
+                "type": "string"
+            }
+        ],
+        "name": "refund",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -439,17 +498,19 @@ export const ESCROW_ABI = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "_transactionId",
-                "type": "uint256"
-            },
-            {
                 "internalType": "string",
-                "name": "_reason",
+                "name": "_orderId",
                 "type": "string"
             }
         ],
-        "name": "resolveDisputeInFavorOfBuyer",
+        "name": "release",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "renounceOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -483,9 +544,9 @@ export const ESCROW_ABI = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
+                "internalType": "string",
                 "name": "",
-                "type": "uint256"
+                "type": "string"
             }
         ],
         "name": "transactions",
@@ -513,6 +574,11 @@ export const ESCROW_ABI = [
             {
                 "internalType": "string",
                 "name": "trackingNumber",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "shippingProvider",
                 "type": "string"
             },
             {
@@ -560,9 +626,9 @@ export const ESCROW_ABI = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "_transactionId",
-                "type": "uint256"
+                "internalType": "string",
+                "name": "_orderId",
+                "type": "string"
             },
             {
                 "internalType": "bool",
@@ -578,13 +644,18 @@ export const ESCROW_ABI = [
     {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "_transactionId",
-                "type": "uint256"
+                "internalType": "string",
+                "name": "_orderId",
+                "type": "string"
             },
             {
                 "internalType": "string",
                 "name": "_trackingNumber",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_shippingProvider",
                 "type": "string"
             }
         ],

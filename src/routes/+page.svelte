@@ -115,12 +115,13 @@
 		const $btn = document.getElementById('btn-payment-request');
 		$btn.setAttribute('disabled', 'disabled');
 
+		const orderId = document.getElementById('payment-request-order-id').value;
 		const desc = document.getElementById('payment-request-description').value;
 		const amount = document.getElementById('payment-request-amount').value;
 
 		try {
 			const trx = await EscrowService.connect(Signer_Seller).createPaymentRequest(
-				Signer_Buyer.address,
+				orderId,
 				ethers.utils.parseEther(amount),
 				desc
 			);
@@ -138,12 +139,12 @@
 		return false;
 	}
 
-	async function pay(transactionId){
-		const $btn = document.querySelector(`[data-pay="${transactionId}"]`);
+	async function pay(orderId){
+		const $btn = document.querySelector(`[data-pay="${orderId}"]`);
 		$btn.setAttribute('disabled', 'disabled');
 
 		try {
-			const trx = await EscrowService.connect(Signer_Buyer).pay(transactionId);
+			const trx = await EscrowService.connect(Signer_Buyer).pay(orderId);
 			await trx.wait();
 
 			BuyerBalance = ethers.utils.formatUnits(await CBDC.balanceOf(Signer_Buyer.address));
@@ -161,8 +162,8 @@
 		$btn.removeAttribute('disabled');
 	}
 
-	async function ship(transactionId){
-		const $btn = document.querySelector(`[data-ship="${transactionId}"]`);
+	async function ship(orderId){
+		const $btn = document.querySelector(`[data-ship="${orderId}"]`);
 		$btn.setAttribute('disabled', 'disabled');
 
 		const trackingNumber = await UIkit.modal.prompt('Please Enter Tracking Number:');
@@ -170,7 +171,7 @@
 		if(trackingNumber){
 			try {
 				
-				const trx = await EscrowService.connect(Signer_Seller).updateTrackingNumber(transactionId, trackingNumber);
+				const trx = await EscrowService.connect(Signer_Seller).updateTrackingNumber(orderId, trackingNumber, 'THAIPOST');
 				await trx.wait();
 
 				orders = await getOrders();
@@ -187,13 +188,13 @@
 
 	}
 
-	async function delivered(transactionId){
-		const $btn = document.querySelector(`[data-delivered="${transactionId}"]`);
+	async function delivered(orderId){
+		const $btn = document.querySelector(`[data-delivered="${orderId}"]`);
 		$btn.setAttribute('disabled', 'disabled');
 
 		try {
 			
-			const trx = await EscrowService.connect(Signer_Admin).updateDeliveryStatus(transactionId, true);
+			const trx = await EscrowService.connect(Signer_Admin).updateDeliveryStatus(orderId, true);
 			await trx.wait();
 
 			orders = await getOrders();
@@ -208,13 +209,13 @@
 		$btn.removeAttribute('disabled');
 	}
 
-	async function complete(transactionId){
-		const $btn = document.querySelector(`[data-complete="${transactionId}"]`);
+	async function complete(orderId){
+		const $btn = document.querySelector(`[data-complete="${orderId}"]`);
 		$btn.setAttribute('disabled', 'disabled');
 
 		try {
 			
-			const trx = await EscrowService.connect(Signer_Buyer).confirmDelivery(transactionId);
+			const trx = await EscrowService.connect(Signer_Buyer).confirmDelivery(orderId);
 			await trx.wait();
 
 			orders = await getOrders();
@@ -273,6 +274,15 @@
 			<div class="round-card l2">
 				<form on:submit={createPaymentRequest}>
 					<h3 class="uk-h4">Create Payment Request</h3>
+
+					<h4 class="uk-h5">Order ID</h4>
+					<input
+						id="payment-request-order-id"
+						type="text"
+						class="uk-input"
+						placeholder="Order ID"
+						required
+					/>
 
 					<h4 class="uk-h5">Order Description</h4>
 					<input
@@ -333,7 +343,7 @@
 					<table class="uk-table uk-table-divider table">
 						<thead>
 							<tr>
-								<th class="uk-text-left">Order Description</th>
+								<th class="uk-text-left">Order</th>
 								<th class="uk-text-right">CBDC Amount</th>
 								<th class="uk-text-center">Status</th>
 								<th class="uk-text-center">Action</th>
@@ -343,7 +353,7 @@
 							{#each orders.reverse() as order}
 								<tr>
 									
-									<td class="uk-text-left">{order.description}</td>
+									<td class="uk-text-left">{order.orderId}<br><small>{order.description}</small></td>
 									<td class="uk-text-right text-hl">{currencyFormat(order.amount)} CBDC</td>
 									<td class="uk-text-center">
 										{#if !order.isPaid}
@@ -362,19 +372,19 @@
 									</td>
 									<td class="uk-text-center">
 										{#if !order.isPaid}
-											<button class="uk-button uk-button-success" data-pay={order.transactionId} on:click={()=>pay(order.transactionId)}>
+											<button class="uk-button uk-button-success" data-pay={order.orderId} on:click={()=>pay(order.orderId)}>
 												[Buyer] Make a Payment
 											</button>
 										{:else if !order.isDelivered && !order.trackingNumber}
-											<button class="uk-button uk-button-warning" data-ship={order.transactionId} on:click={()=>ship(order.transactionId)}>
+											<button class="uk-button uk-button-warning" data-ship={order.orderId} on:click={()=>ship(order.orderId)}>
 												[Seller] Make a Shipment
 											</button>
 										{:else if !order.isDelivered}
-											<button class="uk-button uk-button-primary" data-delivered={order.transactionId} on:click={()=>delivered(order.transactionId)}>
+											<button class="uk-button uk-button-primary" data-delivered={order.orderId} on:click={()=>delivered(order.orderId)}>
 												[Admin] Update Shipping Status
 											</button>
 										{:else if !order.isCompleted}
-											<button class="uk-button uk-button-success" data-complete={order.transactionId} on:click={()=>complete(order.transactionId)}>
+											<button class="uk-button uk-button-success" data-complete={order.orderId} on:click={()=>complete(order.orderId)}>
 												[Buyer] Release the Payment
 											</button>
 										{/if}
